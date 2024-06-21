@@ -44,20 +44,28 @@ def default_tool_formatter(tools: List[Dict[str, Any]]) -> str:
     tool_names = []
     for tool in tools:
         param_text = ""
-        for name, param in tool["parameters"]["properties"].items():
-            required = ", required" if name in tool["parameters"].get("required", []) else ""
-            enum = ", should be one of [{}]".format(", ".join(param["enum"])) if param.get("enum", None) else ""
-            items = (
-                ", where each item should be {}".format(param["items"].get("type", "")) if param.get("items") else ""
-            )
-            param_text += "  - {name} ({type}{required}): {desc}{enum}{items}\n".format(
-                name=name,
-                type=param.get("type", ""),
-                required=required,
-                desc=param.get("description", ""),
-                enum=enum,
-                items=items,
-            )
+        if tool["parameters"] and "properties" in tool["parameters"]:
+            if "required" in tool["parameters"]["properties"] and "required" not in tool["parameters"]:
+                tool["parameters"]['required'] = tool["parameters"]["properties"].pop("required")
+            for name, param in tool["parameters"]["properties"].items():
+                required_tmp = tool["parameters"].get("required", [])
+                if type(required_tmp) == bool and required_tmp:
+                   required = ", required"
+                else:
+                   required = ", required" if name in tool["parameters"].get("required", []) else ""
+
+                enum = ", should be one of [{}]".format(", ".join(param["enum"])) if param.get("enum", None) else ""
+                items = (
+                    ", where each item should be {}".format(param["items"].get("type", "")) if param.get("items") else ""
+                )
+                param_text += "  - {name} ({type}{required}): {desc}{enum}{items}\n".format(
+                    name=name,
+                    type=param.get("type", ""),
+                    required=required,
+                    desc=param.get("description", ""),
+                    enum=enum,
+                    items=items,
+                )
 
         tool_text += "> Tool Name: {name}\nTool Description: {desc}\nTool Args:\n{args}\n".format(
             name=tool["name"], desc=tool.get("description", ""), args=param_text
@@ -66,6 +74,28 @@ def default_tool_formatter(tools: List[Dict[str, Any]]) -> str:
 
     return DEFAULT_TOOL_PROMPT.format(tool_text=tool_text, tool_names=", ".join(tool_names))
 
+
+def extract_from_str(s):
+    # 用于存储解析出的 JSON 对象
+    json_objects = []
+
+    # 初始化索引
+    start_index = 0
+
+    # 逐步解析 JSON 对象
+    while start_index < len(s):
+        try:
+            # 尝试解析 JSON 对象
+            obj, end_index = json.JSONDecoder().raw_decode(s[start_index:])
+            json_objects.append(obj)
+            # 移动索引
+            start_index += end_index
+            # 跳过逗号和空格
+            while start_index < len(s) and (s[start_index] == ',' or s[start_index].isspace()):
+                start_index += 1
+        except json.JSONDecodeError:
+            break
+    return json_objects
 
 def default_tool_extractor(content: str) -> Union[str, List[Tuple[str, str]]]:
     regex = re.compile(r"Action:\s*([a-zA-Z0-9_]+)\s*Action Input:\s*(.+?)(?=\s*Action:|\s*$)", re.DOTALL)
@@ -78,12 +108,14 @@ def default_tool_extractor(content: str) -> Union[str, List[Tuple[str, str]]]:
         tool_name = match[0].strip()
         tool_input = match[1].strip().strip('"').strip("```")
         try:
-            arguments = json.loads(tool_input)
-            results.append((tool_name, json.dumps(arguments, ensure_ascii=False)))
+            arguments_arr = extract_from_str(tool_input)
+            for arguments in arguments_arr:
+                results.append((tool_name, json.dumps(arguments, ensure_ascii=False)))
         except json.JSONDecodeError:
             return content
 
     return results
+
 
 
 def glm4_tool_formatter(tools: List[Dict[str, Any]]) -> str:

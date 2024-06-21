@@ -16,6 +16,38 @@
       "tools": "tools"
     }
   },
+  "ixf_fc_clean2": {
+    "file_name": "custom/ixf_fc2.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "tools": "tools"
+    }
+  },
+  "ixf_fc_clean": {
+    "file_name": "custom/ixf_fc.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "tools": "tools"
+    }
+  },
+  "glaive_toolcall_en_clean": {
+    "file_name": "custom/share_gpt-format-glaive-function-calling-v2.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "tools": "tools"
+    }
+  },
+  "glaive_toolcall_en_correct": {
+    "file_name": "custom/correnct_glaive.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "tools": "tools"
+    }
+  },
   "glaive_toolcall_zh_demo": {
     "file_name": "glaive_toolcall_zh_demo.json",
     "formatting": "sharegpt",
@@ -127,6 +159,13 @@
       "system": "system_prompt"
     }
   },
+  "ixf" : {
+    "file_name": "custom/ixf.json",
+    "columns": {
+      "prompt": "input",
+      "response": "target"
+    }
+ },
   "slimorca": {
     "hf_hub_url": "Open-Orca/SlimOrca",
     "formatting": "sharegpt"
@@ -247,21 +286,6 @@
   },
   "ruozhiba_gpt4": {
     "hf_hub_url": "hfl/ruozhiba_gpt4_turbo"
-  },
-  "neo_sft": {
-    "hf_hub_url": "m-a-p/neo_sft_phase2",
-    "formatting": "sharegpt"
-  },
-  "magpie_pro_300k": {
-    "hf_hub_url": "Magpie-Align/Magpie-Pro-300K-Filtered",
-    "formatting": "sharegpt"
-  },
-  "web_instruct": {
-    "hf_hub_url": "TIGER-Lab/WebInstructSub",
-    "columns": {
-      "prompt": "question",
-      "response": "answer"
-    }
   },
   "llava_1k_en": {
     "hf_hub_url": "BUAADreamer/llava-en-zh-2k",
@@ -535,13 +559,13 @@
       "prompt": "text"
     }
   },
-  "fineweb": {
+  "fileweb": {
     "hf_hub_url": "HuggingFaceFW/fineweb",
     "columns": {
       "prompt": "text"
     }
   },
-  "fineweb_edu": {
+  "fileweb_edu": {
     "hf_hub_url": "HuggingFaceFW/fineweb-edu",
     "columns": {
       "prompt": "text"
@@ -561,5 +585,12 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+  "magicoder-110k": {
+  "hf_hub_url": "ise-uiuc/Magicoder-Evol-Instruct-110K",
+  "columns" : {
+      "prompt": "instruction",
+      "response": "response"
   }
+}
 }
